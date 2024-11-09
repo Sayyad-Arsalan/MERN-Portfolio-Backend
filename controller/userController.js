@@ -87,17 +87,22 @@ export const login = catchAsyncErrors(async (req, res, next) => {
   });
 
   export const logout = catchAsyncErrors(async (req, res, next) => {
-    res
-      .status(200)
-      .cookie("token", "", {
-        httpOnly: true,
-        expires: new Date(Date.now()),
-      })
-      .json({
-        success: true,
-        message: "Logged Out!",
-      });
-  });
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+    req.headers.authorization = "";
+  }
+  
+  res
+    .status(200)
+    .cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    })
+    .json({
+      success: true,
+      message: "Logged Out!",
+    });
+});
+
 
   export const getUser = catchAsyncErrors(async (req, res, next) => {
     const user = await User.findById(req.user.id);
